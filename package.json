@@ -1,0 +1,20 @@
+{
+    "name": "discord_shitbot",
+    "version": "1.0.0",
+    "description": "shitbot",
+    "main": "index.js",
+    "dependencies": {
+        "discord.js": "^11.4.2",
+        "easyurban": "^1.0.0",
+        "reddit-by-date": "^1.0.1",
+        "reddit-snooper": "^1.0.1",
+        "snoowrap": "^1.15.2",
+        "weather-js": "^2.0.0"
+    },
+    "devDependencies": {},
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC"
+}
