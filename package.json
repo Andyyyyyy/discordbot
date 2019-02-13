@@ -1,7 +1,7 @@
 {
-    "name": "discord_shitbot",
+    "name": "discordbot",
     "version": "1.0.0",
-    "description": "shitbot",
+    "description": "discordbot",
     "main": "index.js",
     "dependencies": {
         "discord.js": "^11.4.2",
