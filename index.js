@@ -49,7 +49,7 @@ const commands = [
     "!reddit <subreddit> 🆕",
     "!define <term> 🆕"
 ];
-let commandsString = "dankbot version 2.0 \n List of commands:";
+let commandsString = "List of commands:";
 
 for (let cmd of commands) {
     commandsString += "\n``" + cmd + "``";
@@ -97,14 +97,12 @@ client.on('guildDelete', guild => {
 });
 
 
-//commands n shit
 client.on('message', msg => {
     //debug
     /* if (msg.content === 'test') {
         sendHourlyMemes('DEBUG');
     } */
 
-    //shit
     if (msg.content === 'ayy') {
         msg.channel.send('lmao😂');
     }
@@ -287,8 +285,8 @@ function sendHourlyMemes(text) {
     for (let s of Object.keys(servers)) {
         s = servers[s];
         if (s.memeChannel === "") continue;
-        thisServer = client.guilds.get(s.id);
-        thisChannel = thisServer.channels.get(s.memeChannel);
+        let thisServer = client.guilds.get(s.id);
+        let thisChannel = thisServer.channels.get(s.memeChannel);
 
         console.log(`Send meme to ${thisServer.name}`);
         thisChannel.send(text);
@@ -296,9 +294,7 @@ function sendHourlyMemes(text) {
 
 }
 
-
 client.login(token);
-
 
 let minuteInterval = setInterval(() => {
     intervalCount++;
@@ -326,12 +322,12 @@ function loadServers() {
 }
 
 function textToRegionalIndicator(text) {
-    var lower = text.toLowerCase();
+    let lower = text.toLowerCase();
 
-    var output = "";
+    let output = "";
 
-    for (var i = 0; i < lower.length; i++) {
-        var char = lower.charAt(i);
+    for (let i = 0; i < lower.length; i++) {
+        let char = lower.charAt(i);
 
         if (char === " ") {
             output += char;
