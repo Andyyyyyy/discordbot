@@ -52,6 +52,7 @@ const commands = [
     "!nicememe",
     "!oof",
     "!bruh",
+    "!source",
     "!poll <question>",
     "!weather <location>",
     "!reddit <subreddit>",
@@ -145,6 +146,9 @@ client.on('message', msg => {
             r.getSubreddit('jokes').getRandomSubmission().then(data => {
                 msg.channel.send(`*${data.title}*\n\n${data.selftext}`);
             });
+        } else if (msg.content == "!source") {
+            msg.reply("dankbot sourcecode: https://github.com/Andyyyyyy/discordbot")
+
         } else if (msg.content.split(" ")[0] === "!weather") {
             let location = msg.content.substring(9);
             if (location === "") {
@@ -178,13 +182,15 @@ client.on('message', msg => {
                 .catch(err => { msg.channel.send("⚠ Error. No article found.") })
         } else if (msg.content.split(" ")[0] === "!poll") {
             let question = msg.content.substring(6);
+            if (question == "") {
+                msg.channel.send("Usage: !poll <question>");
+                return;
+            }
             msg.channel.send(`**Poll:** ${question}`)
                 .then(m => {
                     m.react("👍");
                     m.react("👎")
                 });
-        } else if (msg.content.split(" ")[0] === "!google") {
-            let search = msg.content.substring(8);
         }
         /* Sound commands */
         else if (msg.content == "!oof") {
