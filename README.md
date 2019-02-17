@@ -8,6 +8,8 @@ Features:
 * Send the Top post of r/hmmm every hour
 * Turn individual features off (Admin Commands)
 * Get definitions from UrbanDictionary
+* Search Wikipedia
+* Create basic polls
 * Get a weather forecast from anywhere
 * Auto reactions to special messages
 
@@ -23,10 +25,15 @@ Features:
 !kitty
 !doggo
 !nicememe
-!oof 
+!oof
+!bruh
+!source
+!poll <question>
 !weather <location>
 !reddit <subreddit>
 !define <term>
+!wiki <term>
+----------------
 Admin commands:
 !setmemechannel - turns hourly posts on and sets the bots 'auto meme' channel (off by default)
 !resetmemechannel - turns hourly posts off (why)
