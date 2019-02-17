@@ -1,15 +1,14 @@
 {
-    "name": "discordbot",
+    "name": "discord-memebot",
     "version": "1.0.0",
-    "description": "discordbot",
+    "description": "memebot",
     "main": "index.js",
     "dependencies": {
         "discord.js": "^11.4.2",
         "easyurban": "^1.0.0",
-        "reddit-by-date": "^1.0.1",
-        "reddit-snooper": "^1.0.1",
         "snoowrap": "^1.15.2",
-        "weather-js": "^2.0.0"
+        "weather-js": "^2.0.0",
+        "wikijs": "^4.11.2"
     },
     "devDependencies": {},
     "scripts": {
