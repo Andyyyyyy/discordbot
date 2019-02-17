@@ -7,14 +7,20 @@ const snoowrap = require('snoowrap');
 const weather = require('weather-js');
 const UrbanDictionary = require('easyurban');
 const dictionary = new UrbanDictionary;
+const wiki = require('wikijs').default;
 
+const shoutBackRegEx = /^[A-Z ]+$/;
 let intervalCount = 0;
 
+/**
+ * Load server settings
+ */
 let serversJSON = fs.readFileSync('./servers.json');
 serversJSON = JSON.parse(serversJSON);
 
-let servers = {}; //server classes
+let servers = {}; //server classes dict
 
+/** Server Class */
 const server = function(id) {
     this.id = id;
     this.memeChannel = "";
@@ -43,11 +49,14 @@ const commands = [
     "!deepfry",
     "!kitty",
     "!doggo",
-    "!nicememe 🆕",
-    "!oof 🆕",
-    "!weather <location> 🆕",
-    "!reddit <subreddit> 🆕",
-    "!define <term> 🆕"
+    "!nicememe",
+    "!oof",
+    "!bruh",
+    "!poll <question>",
+    "!weather <location>",
+    "!reddit <subreddit>",
+    "!define <term>",
+    "!wiki <term>"
 ];
 let commandsString = "List of commands:";
 
@@ -60,11 +69,10 @@ Admin commands:
 \`!setmemechannel\` - turns hourly posts on and sets the bots 'auto meme' channel (off by default)
 \`!resetmemechannel\` - turns hourly posts off (why)
 \`!shoutback\` - turns 'shoutback' on/off (on by default)
-\`!nsfw 🆕\` - allows NSFW posts from !reddit command (off by default, works only in NSFW channels)
+\`!nsfw\` - allows NSFW posts from !reddit command (off by default, works only in NSFW channels)
 Bot by awieandy#4205`;
 
-
-
+/** On bot start up */
 client.on('ready', () => {
     console.log(`Bot started.`);
     console.log(`Logged in as ${client.user.tag}!`);
@@ -72,6 +80,9 @@ client.on('ready', () => {
     setPresenceText(`ayy lmao`);
 });
 
+/**
+ * Bot joines a Discord server
+ */
 client.on('guildCreate', (guild) => {
     //create new server instance
     let newServer = new server(guild.id);
@@ -90,159 +101,154 @@ client.on('guildCreate', (guild) => {
     }
 });
 
+/**
+ * Bot gets kicked from Discord server
+ */
 client.on('guildDelete', guild => {
     delete servers["" + guild.id];
     serversToJson();
     console.log(`Bot kicked from ${guild.name}`);
 });
 
-
+/**
+ * Respond to incoming messages f.e. commands
+ */
 client.on('message', msg => {
     //debug
     /* if (msg.content === 'test') {
         sendHourlyMemes('DEBUG');
     } */
 
-    if (msg.content === 'ayy') {
-        msg.channel.send('lmao😂');
-    }
-
-    //commands
-    else if (msg.content === '!ping') {
-        msg.channel.send('Pong 🏓');
-    } else if (msg.content === '!help') {
-        msg.reply(commandsString);
-    } else if (msg.content === '!hmmm') {
-        r.getSubreddit('hmmm').getRandomSubmission().url.then(function(data) { msg.channel.send(data).then(m => { m.react("🤔") }) });
-    } else if (msg.content === '!dafuq') {
-        r.getSubreddit('cursedimages').getRandomSubmission().url.then(function(data) { msg.channel.send(data).then(m => { m.react("✝") }) });
-    } else if (msg.content === '!meirl') {
-        r.getSubreddit('me_irl').getRandomSubmission().url.then(function(data) { msg.channel.send(data).then(m => { m.react("👀") }) });
-    } else if (msg.content === '!vid') {
-        r.getSubreddit('youtubehaiku').getRandomSubmission().url.then(function(data) { msg.channel.send(data).then(m => { m.react("📼") }) });
-    } else if (msg.content === '!deepfry') {
-        r.getSubreddit('DeepFriedMemes').getRandomSubmission().url.then(function(data) { msg.channel.send(data).then(m => { m.react("🍤") }) });
-    } else if (msg.content === '!dank') {
-        r.getSubreddit('dankmemes').getRandomSubmission().url.then(function(data) { msg.channel.send(data).then(m => { m.react("💯") }) });
-    } else if (msg.content === '!kitty') {
-        r.getSubreddit('kitty').getRandomSubmission().url.then(function(data) { msg.channel.send(data).then(m => { m.react("🐱") }) });
-    } else if (msg.content === '!doggo') {
-        r.getSubreddit('woof_irl').getRandomSubmission().url.then(function(data) { msg.channel.send(data).then(m => { m.react("🐶") }) });
-    } else if (msg.content.split(" ")[0] === "!weather") {
-        let location = msg.content.substring(9);
-        if (location === "") {
-            msg.channel.send("Usage: !weather <location>");
-            return;
-        }
-        getWeather(location, msg);
-    } else if (msg.content.split(" ")[0] === "!reddit") {
-        let subreddit = msg.content.split(" ")[1];
-        if (subreddit === undefined) {
-            msg.channel.send("Usage: !reddit <subreddit>");
-            return;
-        }
-        r.getSubreddit(subreddit).getRandomSubmission()
-            .then(data => {
-                if (data.url === undefined) {
-                    msg.channel.send("Subreddit does not exist or Reddit API fucks around");
-                    return;
-                }
-                if (data.over_18) {
-                    if (!servers["" + msg.guild.id].nsfw) {
-                        msg.channel.send("‼ Post is NSFW. Use !nsfw to allow NSFW posts.");
-                        return;
-                    }
-                    if (!msg.channel.nsfw) {
-                        msg.channel.send("‼ Post is NSFW. This isn't a NSFW channel.");
-                        return;
-                    }
-                    msg.channel.send(data.url);
-                } else {
-                    msg.channel.send(data.url);
-                }
+    //commands - messages that start with '!'
+    if (msg.content[0] == "!") {
+        if (msg.content === '!ping') {
+            msg.channel.send('Pong 🏓');
+        } else if (msg.content === '!help') {
+            msg.reply(commandsString);
+        } else if (msg.content === '!hmmm') {
+            r.getSubreddit('hmmm').getRandomSubmission().url.then(data => { msg.channel.send(data).then(m => { m.react("🤔") }) });
+        } else if (msg.content === '!dafuq') {
+            r.getSubreddit('cursedimages').getRandomSubmission().url.then(data => { msg.channel.send(data).then(m => { m.react("✝") }) });
+        } else if (msg.content === '!meirl') {
+            r.getSubreddit('me_irl').getRandomSubmission().url.then(data => { msg.channel.send(data).then(m => { m.react("👀") }) });
+        } else if (msg.content === '!vid') {
+            r.getSubreddit('youtubehaiku').getRandomSubmission().url.then(data => { msg.channel.send(data).then(m => { m.react("📼") }) });
+        } else if (msg.content === '!deepfry') {
+            r.getSubreddit('DeepFriedMemes').getRandomSubmission().url.then(data => { msg.channel.send(data).then(m => { m.react("🍤") }) });
+        } else if (msg.content === '!dank') {
+            r.getSubreddit('dankmemes').getRandomSubmission().url.then(data => { msg.channel.send(data).then(m => { m.react("💯") }) });
+        } else if (msg.content === '!kitty') {
+            r.getSubreddit('kitty').getRandomSubmission().url.then(data => { msg.channel.send(data).then(m => { m.react("🐱") }) });
+        } else if (msg.content === '!doggo') {
+            r.getSubreddit('woof_irl').getRandomSubmission().url.then(data => { msg.channel.send(data).then(m => { m.react("🐶") }) });
+        } else if (msg.content === '!joke') {
+            r.getSubreddit('jokes').getRandomSubmission().then(data => {
+                msg.channel.send(`*${data.title}*\n\n${data.selftext}`);
             });
-    } else if (msg.content == "!nicememe") {
-        msg.channel.send("***Nice Meme!***");
-        msg.channel.send({
-            files: ['http://niceme.me/nicememe.mp3']
-        });
-    } else if (msg.content.split(" ")[0] === "!define") {
-        let term = msg.content.substring(8);
-        if (term == "") {
-            msg.channel.send("Usage: !define <term>");
-            return;
+        } else if (msg.content.split(" ")[0] === "!weather") {
+            let location = msg.content.substring(9);
+            if (location === "") {
+                msg.channel.send("Usage: !weather <location>");
+                return;
+            }
+            getWeather(location, msg);
+        } else if (msg.content.split(" ")[0] === "!reddit") {
+            let subreddit = msg.content.split(" ")[1];
+            if (subreddit === undefined) {
+                msg.channel.send("Usage: !reddit <subreddit>");
+                return;
+            }
+            getRandomSubmission(subreddit, msg);
+
+        } else if (msg.content.split(" ")[0] === "!define") {
+            let term = msg.content.substring(8);
+            if (term == "") {
+                msg.channel.send("Usage: !define <term>");
+                return;
+            }
+            udDefine(term, msg);
+        } else if (msg.content.split(" ")[0] === "!wiki") {
+            let term = msg.content.substring(6);
+            if (term == "") {
+                msg.channel.send("Usage: !wiki <term>");
+                return;
+            }
+            wiki().page(term)
+                .then(data => msg.channel.send(data.raw.fullurl))
+                .catch(err => { msg.channel.send("⚠ Error. No article found.") })
+        } else if (msg.content.split(" ")[0] === "!poll") {
+            let question = msg.content.substring(6);
+            msg.channel.send(`**Poll:** ${question}`)
+                .then(m => {
+                    m.react("👍");
+                    m.react("👎")
+                });
+        } else if (msg.content.split(" ")[0] === "!google") {
+            let search = msg.content.substring(8);
         }
-        dictionary.lookup(term)
-            .then(result => {
-                if (result.list.length == 0) {
-                    msg.channel.send("Couldn't find definition for " + term);
-                    return;
-                }
-                let definition = `**${result.list[0].word}**:
-${result.list[0].definition}
-Example: *${result.list[0].example}*`;
-                definition = definition.replace(/\[/g, "");
-                definition = definition.replace(/\]/g, "");
-                msg.channel.send(definition);
-            })
-            .catch(console.error)
-    } else if (msg.content == "!oof") {
-        let rand = Math.floor(Math.random() * (oof.length - 1 + 1));
-        msg.channel.send("***OOF***");
-        msg.channel.send({
-            files: [oof[rand]]
-        })
+        /* Sound commands */
+        else if (msg.content == "!oof") {
+            let rand = Math.floor(Math.random() * (oof.length - 1 + 1));
+            msg.channel.send("***OOF***");
+            msg.channel.send({
+                files: [oof[rand]]
+            });
+        } else if (msg.content == "!nicememe") {
+            msg.channel.send("***Nice Meme!***");
+            msg.channel.send({
+                files: ['http://niceme.me/nicememe.mp3']
+            });
+        } else if (msg.content == "!bruh") {
+            msg.channel.send("***BRUH***");
+            msg.channel.send({
+                files: ['https://www.myinstants.com/media/sounds/movie_1.mp3']
+            });
+        }
+        /** 
+         * Admin Commands 
+         */
+        else if (msg.content === "!setmemechannel") {
+            if (!msg.member.hasPermission("ADMINISTRATOR")) {
+                msg.channel.send("You don't have permissions for this action");
+                return;
+            }
+            let currentServer = servers["" + msg.guild.id];
+            currentServer.memeChannel = msg.channel.id;
+            serversToJson();
+            msg.channel.send("Meme channel set to this one.");
+        } else if (msg.content === "!resetmemechannel") {
+            if (!msg.member.hasPermission("ADMINISTRATOR")) {
+                msg.channel.send("You don't have permissions for this action");
+                return;
+            }
+            let currentServer = servers["" + msg.guild.id];
+            currentServer.memeChannel = "";
+            serversToJson();
+            msg.channel.send("Hourly memes turned off (why tho).");
+        } else if (msg.content === "!shoutback") {
+            if (!msg.member.hasPermission("ADMINISTRATOR")) {
+                msg.channel.send("You don't have permissions for this action");
+                return;
+            }
+            let currentServer = servers["" + msg.guild.id];
+            currentServer.shoutback = !currentServer.shoutback;
+            serversToJson();
+            msg.channel.send(`Shoutback has been turned ${currentServer.shoutback ? "on" : "off"}.`);
+        } else if (msg.content === "!nsfw") {
+            if (!msg.member.hasPermission("ADMINISTRATOR")) {
+                msg.channel.send("You don't have permissions for this action");
+                return;
+            }
+            let currentServer = servers["" + msg.guild.id];
+            currentServer.nsfw = !currentServer.nsfw;
+            serversToJson();
+            msg.channel.send(`NSFW Posts are now ${currentServer.nsfw ? "allowed" : "forbidden"}.`);
+        }
     }
-    ////////////////////////////////////////////////////////
-
-    //Admin commands
-    else if (msg.content === "!setmemechannel") {
-
-        if (!msg.member.hasPermission("ADMINISTRATOR")) {
-            msg.channel.send("You don't have permissions for this action");
-            return;
-        }
-        //server finden
-        let currentServer = servers["" + msg.guild.id];
-        currentServer.memeChannel = msg.channel.id;
-        serversToJson();
-        msg.channel.send("Meme channel set to this one.");
-
-    } else if (msg.content === "!resetmemechannel") {
-        if (!msg.member.hasPermission("ADMINISTRATOR")) {
-            msg.channel.send("You don't have permissions for this action");
-            return;
-        }
-        //server finden
-        let currentServer = servers["" + msg.guild.id];
-        currentServer.memeChannel = "";
-        serversToJson();
-        msg.channel.send("Hourly memes turned off (why tho).");
-
-    } else if (msg.content === "!shoutback") {
-        //Adminrechte?
-        if (!msg.member.hasPermission("ADMINISTRATOR")) {
-            msg.channel.send("You don't have permissions for this action");
-            return;
-        }
-        let currentServer = servers["" + msg.guild.id];
-        currentServer.shoutback = !currentServer.shoutback;
-        serversToJson();
-        msg.channel.send(`Shoutback has been turned ${currentServer.shoutback ? "on" : "off"}.`);
-    } else if (msg.content === "!nsfw") {
-        //Adminrechte?
-        if (!msg.member.hasPermission("ADMINISTRATOR")) {
-            msg.channel.send("You don't have permissions for this action");
-            return;
-        }
-        let currentServer = servers["" + msg.guild.id];
-        currentServer.nsfw = !currentServer.nsfw;
-        serversToJson();
-        msg.channel.send(`NSFW Posts are now ${currentServer.nsfw ? "allowed" : "forbidden"}.`);
-    }
-
-    //Reactions
-    else if (msg.content === 'nice') {
+    //Actions without command
+    else if (msg.content === 'ayy') {
+        msg.channel.send('lmao😂');
+    } else if (msg.content === 'nice') {
         msg.react('🇳').then(() => {
             msg.react('🇮').then(() => {
                 msg.react('🇨').then(() => {
@@ -260,13 +266,10 @@ Example: *${result.list[0].example}*`;
         });
     }
     //Shoutback
-    else {
-        let regEx = /^[A-Z ]+$/;
-        if (msg.content.length > 3 && regEx.test(msg.content)) {
-            let currentServer = servers["" + msg.guild.id];
-            if (currentServer.shoutback) {
-                msg.channel.send(textToRegionalIndicator(msg.content));
-            }
+    else if (msg.content.length > 3 && shoutBackRegEx.test(msg.content)) {
+        let currentServer = servers["" + msg.guild.id];
+        if (currentServer.shoutback) {
+            msg.channel.send(textToRegionalIndicator(msg.content));
         }
     }
 });
@@ -276,7 +279,7 @@ client.on('error', err => {
 });
 
 client.on('disconnect', e => {
-    console.log('DISCONNECTED!!1!!');
+    console.log('disconnected.');
 });
 
 function sendHourlyMemes(text) {
@@ -291,10 +294,8 @@ function sendHourlyMemes(text) {
         console.log(`Send meme to ${thisServer.name}`);
         thisChannel.send(text);
     }
-
 }
 
-client.login(token);
 
 let minuteInterval = setInterval(() => {
     intervalCount++;
@@ -323,12 +324,9 @@ function loadServers() {
 
 function textToRegionalIndicator(text) {
     let lower = text.toLowerCase();
-
     let output = "";
-
     for (let i = 0; i < lower.length; i++) {
         let char = lower.charAt(i);
-
         if (char === " ") {
             output += char;
         } else {
@@ -351,7 +349,7 @@ function getWeather(location, msg) {
         } else {
             result = result[0];
             if (result === undefined) {
-                msg.channel.send("❓ Unknown location.");
+                msg.channel.send("? Unknown location.");
                 return;
             }
             output = `In **${result.location.name}** it's **${result.current.temperature} °C** and ${result.current.skytext}.`
@@ -364,6 +362,52 @@ function getWeather(location, msg) {
     });
 }
 
+function udDefine(term, msg) {
+    dictionary.lookup(term)
+        .then(result => {
+            if (result.list.length == 0) {
+                msg.channel.send("Couldn't find definition for " + term);
+                return;
+            }
+            let definition = `**${result.list[0].word}**:
+${result.list[0].definition}
+Example: *${result.list[0].example}*`;
+            definition = definition.replace(/\[/g, "");
+            definition = definition.replace(/\]/g, "");
+            msg.channel.send(definition);
+        })
+        .catch(console.error);
+}
+
 function serversToJson() {
     fs.writeFileSync('servers.json', JSON.stringify(servers));
 }
+
+function getRandomSubmission(subreddit, msg) {
+    r.getSubreddit(subreddit).getRandomSubmission()
+        .then(data => {
+            if (data.url === undefined) {
+                msg.channel.send("Subreddit does not exist or Reddit API fucks around");
+                return;
+            }
+            if (msg.channel.type == "text") {
+                if (data.over_18) {
+                    if (!servers["" + msg.guild.id].nsfw) {
+                        msg.channel.send("? Post is NSFW. Use !nsfw to allow NSFW posts.");
+                        return;
+                    }
+                    if (!msg.channel.nsfw) {
+                        msg.channel.send("? Post is NSFW. This isn't a NSFW channel.");
+                        return;
+                    }
+                    msg.channel.send(data.url);
+                } else {
+                    msg.channel.send(data.url);
+                }
+            } else if (msg.channel.type == "dm" || msg.type == "group") {
+                msg.channel.send(data.url);
+            }
+        });
+}
+/** Log into Discord */
+client.login(token);
