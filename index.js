@@ -387,6 +387,7 @@ Example: *${result.list[0].example}*`;
 
 function serversToJson() {
     fs.writeFileSync('servers.json', JSON.stringify(servers));
+    serversJSON = servers;
 }
 
 function getRandomSubmission(subreddit, msg) {
