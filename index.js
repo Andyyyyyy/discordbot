@@ -38,6 +38,8 @@ let r = new snoowrap({
 
 const oof = ['https://www.myinstants.com/media/sounds/roblox-death-sound_1.mp3', 'https://www.myinstants.com/media/sounds/sm64_mario_oof.mp3', 'https://www.myinstants.com/media/sounds/classic_hurt.mp3']
 
+const options_8ball = ["It is certain", "It is decidedly so", "Without a doubt", "Yes definitely", "You may rely on it", "As I see it, yes", "Most likely", "Outlook good", "Yes", "Signs point to yes", "Don't count on it", "My reply is no", "My sources say no", "Outlook not so good", "Very doubtful"]
+
 const commands = [
     "!help",
     "!ping",
@@ -52,10 +54,12 @@ const commands = [
     "!nicememe",
     "!oof",
     "!bruh",
+    "!ohshit",
+    "!8ball",
     "!source",
     "!poll <question>",
     "!weather <location>",
-    "!reddit <subreddit>",
+    "!r (!reddit) <subreddit>",
     "!define <term>",
     "!wiki <term>"
 ];
@@ -72,6 +76,8 @@ Admin commands:
 \`!shoutback\` - turns 'shoutback' on/off (on by default)
 \`!nsfw\` - allows NSFW posts from !reddit command (off by default, works only in NSFW channels)
 Bot by awieandy#4205`;
+
+let lastMeme = ""; //prevent posting the same picture for hours
 
 /** On bot start up */
 client.on('ready', () => {
@@ -148,7 +154,9 @@ client.on('message', msg => {
             });
         } else if (msg.content == "!source") {
             msg.reply("dankbot sourcecode: https://github.com/Andyyyyyy/discordbot")
-
+        } else if (msg.content.split(" ")[0] === "!8ball") {
+            let rand = Math.floor(Math.random() * (options_8ball.length - 1 + 1));
+            msg.reply(options_8ball[rand]);
         } else if (msg.content.split(" ")[0] === "!weather") {
             let location = msg.content.substring(9);
             if (location === "") {
@@ -156,7 +164,7 @@ client.on('message', msg => {
                 return;
             }
             getWeather(location, msg);
-        } else if (msg.content.split(" ")[0] === "!reddit") {
+        } else if (msg.content.split(" ")[0] === "!reddit" || msg.content.split(" ")[0] === "!r") {
             let subreddit = msg.content.split(" ")[1];
             if (subreddit === undefined) {
                 msg.channel.send("Usage: !reddit <subreddit>");
@@ -208,6 +216,23 @@ client.on('message', msg => {
             msg.channel.send("***BRUH***");
             msg.channel.send({
                 files: ['https://www.myinstants.com/media/sounds/movie_1.mp3']
+            });
+        } else if (msg.content == "!ohshit") {
+            msg.channel.send("***OH SHIT***");
+            msg.channel.send({
+                files: ['https://www.myinstants.com/media/sounds/oh-shit_4.mp3']
+            });
+        } else if (msg.content == "!lachs") {
+            msg.channel.send({
+                files: ['http://pingusteif.de/sounds/den_lachs_ins_arschloch.mp3']
+            });
+        } else if (msg.content == "!behinderung") {
+            msg.channel.send({
+                files: ['http://pingusteif.de/sounds/rivaa_behinderung.ogg']
+            });
+        } else if (msg.content == "!spasten") {
+            msg.channel.send({
+                files: ['http://pingusteif.de/sounds/foggel_weazel_sind_spasten.ogg']
             });
         }
         /** 
@@ -289,6 +314,7 @@ client.on('disconnect', e => {
 });
 
 function sendHourlyMemes(text) {
+
     console.log("Sending out dem memes...");
 
     for (let s of Object.keys(servers)) {
@@ -306,7 +332,16 @@ function sendHourlyMemes(text) {
 let minuteInterval = setInterval(() => {
     intervalCount++;
     if (intervalCount === 60) {
-        r.getTop("hmmm", { "time": "hour" })[0].url.then(function(data) { sendHourlyMemes(data) });
+        r.getTop("hmmm", { "time": "hour" })[0].url.then(function(data) {
+            if (lastMeme !== data) {
+                sendHourlyMemes(data);
+                lastMeme = data;
+            } else {
+                r.getRandomSubmission("hmmm").url.then(data => {
+                    sendHourlyMemes(data);
+                });
+            }
+        });
         intervalCount = 0;
     }
     if (intervalCount % 9 === 0) {
@@ -315,6 +350,7 @@ let minuteInterval = setInterval(() => {
         setPresenceText(`Shitpost incoming in ${60-intervalCount} minutes`);
     }
 }, 60 * 1000);
+
 
 
 function loadServers() {
@@ -400,11 +436,11 @@ function getRandomSubmission(subreddit, msg) {
             if (msg.channel.type == "text") {
                 if (data.over_18) {
                     if (!servers["" + msg.guild.id].nsfw) {
-                        msg.channel.send("? Post is NSFW. Use !nsfw to allow NSFW posts.");
+                        msg.channel.send("⚠ Post is NSFW. Use !nsfw to allow NSFW posts.");
                         return;
                     }
                     if (!msg.channel.nsfw) {
-                        msg.channel.send("? Post is NSFW. This isn't a NSFW channel.");
+                        msg.channel.send("⚠ Post is NSFW. This isn't a NSFW channel.");
                         return;
                     }
                     msg.channel.send(data.url);
