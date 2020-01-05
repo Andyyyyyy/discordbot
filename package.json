@@ -4,8 +4,11 @@
     "description": "memebot",
     "main": "index.js",
     "dependencies": {
+        "archiver": "^3.1.1",
         "discord.js": "^11.4.2",
         "easyurban": "^1.0.0",
+        "image-downloader": "^3.5.0",
+        "request-promise-native": "^1.0.8",
         "snoowrap": "^1.15.2",
         "weather-js": "^2.0.0",
         "wikijs": "^4.11.2"
