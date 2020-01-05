@@ -35,6 +35,7 @@ Features:
 !wiki <term>
 ----------------
 Admin commands:
+!dumpemoji - dumps all server emoji to a zip file
 !setmemechannel - turns hourly posts on and sets the bots 'auto meme' channel (off by default)
 !resetmemechannel - turns hourly posts off (why)
 !shoutback - turns 'shoutback' on/off (on by default)
