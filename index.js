@@ -8,6 +8,8 @@ const weather = require("weather-js");
 const UrbanDictionary = require("easyurban");
 const dictionary = new UrbanDictionary();
 const wiki = require("wikijs").default;
+const archiver = require("archiver");
+const imagedownloader = require("image-downloader");
 
 const shoutBackRegEx = /^[A-Z ]+$/;
 let intervalCount = 0;
@@ -29,8 +31,7 @@ const server = function(id) {
 };
 
 let r = new snoowrap({
-  userAgent:
-    "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9b5pre) Gecko/2008030706 Firefox/3.0b5pre",
+  userAgent: "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9b5pre) Gecko/2008030706 Firefox/3.0b5pre",
   clientId: redditKey.id,
   clientSecret: redditKey.secret,
   username: redditKey.username,
@@ -95,6 +96,7 @@ for (let cmd of commands) {
 commandsString += `
 ----------------
 Admin commands:
+\`!dumpemoji\` - dumps all server emoji to a zip file
 \`!setmemechannel\` - turns hourly posts on and sets the bots 'auto meme' channel (off by default)
 \`!resetmemechannel\` - turns hourly posts off (why)
 \`!shoutback\` - turns 'shoutback' on/off (on by default)
@@ -157,7 +159,8 @@ client.on("message", msg => {
     } else if (msg.content === "!help") {
       msg.reply(commandsString);
     } else if (msg.content === "!hmmm") {
-      r.getSubreddit("hmmm")
+      r
+        .getSubreddit("hmmm")
         .getRandomSubmission()
         .url.then(data => {
           msg.channel.send(isImage(data) ? { files: [data] } : data).then(m => {
@@ -165,7 +168,8 @@ client.on("message", msg => {
           });
         });
     } else if (msg.content === "!dafuq") {
-      r.getSubreddit("cursedimages")
+      r
+        .getSubreddit("cursedimages")
         .getRandomSubmission()
         .url.then(data => {
           msg.channel.send(isImage(data) ? { files: [data] } : data).then(m => {
@@ -173,7 +177,8 @@ client.on("message", msg => {
           });
         });
     } else if (msg.content === "!meirl") {
-      r.getSubreddit("me_irl")
+      r
+        .getSubreddit("me_irl")
         .getRandomSubmission()
         .url.then(data => {
           msg.channel.send(isImage(data) ? { files: [data] } : data).then(m => {
@@ -181,7 +186,8 @@ client.on("message", msg => {
           });
         });
     } else if (msg.content === "!vid") {
-      r.getSubreddit("youtubehaiku")
+      r
+        .getSubreddit("youtubehaiku")
         .getRandomSubmission()
         .url.then(data => {
           msg.channel.send(data).then(m => {
@@ -189,7 +195,8 @@ client.on("message", msg => {
           });
         });
     } else if (msg.content === "!deepfry") {
-      r.getSubreddit("DeepFriedMemes")
+      r
+        .getSubreddit("DeepFriedMemes")
         .getRandomSubmission()
         .url.then(data => {
           msg.channel.send(isImage(data) ? { files: [data] } : data).then(m => {
@@ -197,7 +204,8 @@ client.on("message", msg => {
           });
         });
     } else if (msg.content === "!dank") {
-      r.getSubreddit("dankmemes")
+      r
+        .getSubreddit("dankmemes")
         .getRandomSubmission()
         .url.then(data => {
           msg.channel.send(isImage(data) ? { files: [data] } : data).then(m => {
@@ -205,7 +213,8 @@ client.on("message", msg => {
           });
         });
     } else if (msg.content === "!kitty") {
-      r.getSubreddit("kitty")
+      r
+        .getSubreddit("kitty")
         .getRandomSubmission()
         .url.then(data => {
           msg.channel.send(isImage(data) ? { files: [data] } : data).then(m => {
@@ -213,7 +222,8 @@ client.on("message", msg => {
           });
         });
     } else if (msg.content === "!doggo") {
-      r.getSubreddit("woof_irl")
+      r
+        .getSubreddit("woof_irl")
         .getRandomSubmission()
         .url.then(data => {
           msg.channel.send(isImage(data) ? { files: [data] } : data).then(m => {
@@ -221,7 +231,8 @@ client.on("message", msg => {
           });
         });
     } else if (msg.content === "!joke") {
-      r.getSubreddit("jokes")
+      r
+        .getSubreddit("jokes")
         .getRandomSubmission()
         .then(data => {
           msg.channel.send(`*${data.title}*\n\n${data.selftext}`);
@@ -238,10 +249,7 @@ client.on("message", msg => {
         return;
       }
       getWeather(location, msg);
-    } else if (
-      msg.content.split(" ")[0] === "!reddit" ||
-      msg.content.split(" ")[0] === "!r"
-    ) {
+    } else if (msg.content.split(" ")[0] === "!reddit" || msg.content.split(" ")[0] === "!r") {
       let subreddit = msg.content.split(" ")[1];
       if (subreddit === undefined) {
         msg.channel.send("Usage: !reddit <subreddit>");
@@ -278,7 +286,8 @@ client.on("message", msg => {
         m.react("👎");
       });
     } else if (msg.content === "!joke") {
-      r.getSubreddit("jokes")
+      r
+        .getSubreddit("jokes")
         .getRandomSubmission()
         .then(data => {
           msg.channel.send(`*${data.title}*\n\n${data.selftext}`);
@@ -291,9 +300,7 @@ client.on("message", msg => {
       let members = msg.guild.members.array();
       let list = "Alle Spasten hier:\n";
       for (let i = 0; i < members.length; i++) {
-        list += `:regional_indicator_${spasten[i % spasten.length]}: ${
-          members[i].displayName
-        }\n`;
+        list += `:regional_indicator_${spasten[i % spasten.length]}: ${members[i].displayName}\n`;
       }
       msg.channel.send(list);
     } else if (msg.content == "!oof") {
@@ -334,10 +341,44 @@ client.on("message", msg => {
       msg.channel.send({
         files: ["https://www.myinstants.com/media/sounds/kirby-poyo.mp3"]
       });
-    } else if (msg.content === "!setmemechannel") {
+    } else if (msg.content === "!dumpemoji") {
       /**
        * Admin Commands
        */
+      if (!msg.member.hasPermission("ADMINISTRATOR")) {
+        msg.channel.send("You don't have permissions for this action");
+        return;
+      }
+      msg.channel.send("Dumping all server emoji. Please wait...");
+      let emojiMap = msg.guild.emojis;
+      let dir = `./${msg.guild.id}`;
+      prepareEmojiDump(dir);
+      downloadEmojis(emojiMap, dir).then(() => {
+        msg.channel.send("Creating zip archive...");
+        let files = fs.readdirSync(dir);
+        let output = fs.createWriteStream(`${dir}/${msg.guild.name}.zip`);
+        let archive = archiver("zip");
+        archive.on("error", function(err) {
+          msg.channel.send("Error.");
+        });
+
+        archive.pipe(output);
+
+        for (let file of files) {
+          // console.log(file);
+          archive.file(`${dir}/${file}`, { name: file });
+        }
+        archive.finalize().then(() => {
+          msg.channel
+            .send({
+              files: [`${dir}/${msg.guild.name}.zip`]
+            })
+            .then(() => {
+              deleteFolderRecursive(dir);
+            });
+        });
+      });
+    } else if (msg.content === "!setmemechannel") {
       if (!msg.member.hasPermission("ADMINISTRATOR")) {
         msg.channel.send("You don't have permissions for this action");
         return;
@@ -363,9 +404,7 @@ client.on("message", msg => {
       let currentServer = servers["" + msg.guild.id];
       currentServer.shoutback = !currentServer.shoutback;
       serversToJson();
-      msg.channel.send(
-        `Shoutback has been turned ${currentServer.shoutback ? "on" : "off"}.`
-      );
+      msg.channel.send(`Shoutback has been turned ${currentServer.shoutback ? "on" : "off"}.`);
     } else if (msg.content === "!nsfw") {
       if (!msg.member.hasPermission("ADMINISTRATOR")) {
         msg.channel.send("You don't have permissions for this action");
@@ -374,13 +413,10 @@ client.on("message", msg => {
       let currentServer = servers["" + msg.guild.id];
       currentServer.nsfw = !currentServer.nsfw;
       serversToJson();
-      msg.channel.send(
-        `NSFW Posts are now ${currentServer.nsfw ? "allowed" : "forbidden"}.`
-      );
+      msg.channel.send(`NSFW Posts are now ${currentServer.nsfw ? "allowed" : "forbidden"}.`);
     }
-  }
-  //Actions without command
-  else if (msg.content === "ayy") {
+  } else if (msg.content === "ayy") {
+    //Actions without command
     msg.channel.send("lmao😂");
   } else if (msg.content === "nice") {
     msg.react("🇳").then(() => {
@@ -398,9 +434,8 @@ client.on("message", msg => {
         });
       });
     });
-  }
-  //Shoutback
-  else if (msg.content.length > 3 && shoutBackRegEx.test(msg.content)) {
+  } else if (msg.content.length > 3 && shoutBackRegEx.test(msg.content)) {
+    //Shoutback
     let currentServer = servers["" + msg.guild.id];
     if (currentServer.shoutback) {
       msg.channel.send(textToRegionalIndicator(msg.content));
@@ -496,10 +531,12 @@ function getWeather(location, msg) {
         msg.channel.send("? Unknown location.");
         return;
       }
-      output = `In **${result.location.name}** it's **${result.current.temperature} °C** and ${result.current.skytext}.`;
+      output = `In **${result.location.name}** it's **${result.current.temperature} °C** and ${result.current
+        .skytext}.`;
       output += "\n__Forecast:__";
       for (let i = 2; i < 5; i++) {
-        output += `\n**${result.forecast[i].day}:** ${result.forecast[i].skytextday} at **${result.forecast[i].low}** to **${result.forecast[i].high} °C**`;
+        output += `\n**${result.forecast[i].day}:** ${result.forecast[i].skytextday} at **${result.forecast[i]
+          .low}** to **${result.forecast[i].high} °C**`;
       }
     }
     msg.channel.send(output);
@@ -530,7 +567,8 @@ function serversToJson() {
 }
 
 function getRandomSubmission(subreddit, msg) {
-  r.getSubreddit(subreddit)
+  r
+    .getSubreddit(subreddit)
     .getRandomSubmission()
     .then(data => {
       if (data.url === undefined) {
@@ -557,11 +595,53 @@ function getRandomSubmission(subreddit, msg) {
       }
     });
 }
+
 function isImage(url) {
   let regex = /\.(jpg|png|gif)$/;
 
-  // return regex.test(url);
-  return false; // auf true machen wenn nicht mehr auf pi gehostet
+  return regex.test(url);
+  //return false; // auf true machen wenn nicht mehr auf pi gehostet
+}
+
+const deleteFolderRecursive = function(path) {
+  if (fs.existsSync(path)) {
+    fs.readdirSync(path).forEach(function(file, index) {
+      var curPath = path + "/" + file;
+      if (fs.statSync(curPath).isDirectory()) {
+        // recurse
+        deleteFolderRecursive(curPath);
+      } else {
+        // delete file
+        fs.unlinkSync(curPath);
+      }
+    });
+    fs.rmdirSync(path);
+  }
+};
+
+function prepareEmojiDump(path) {
+  if (fs.existsSync(path)) {
+    fs.readdirSync(path).forEach(function(file, index) {
+      let curPath = path + "/" + file;
+      fs.unlinkSync(curPath);
+    });
+  } else {
+    fs.mkdirSync(path);
+  }
+}
+
+async function downloadEmojis(emojiMap, dir) {
+  return new Promise(async function(resolve, reject) {
+    for (let emoji of emojiMap) {
+      emoji = emoji[1];
+      let { filename, image } = await imagedownloader.image({
+        url: emoji.url,
+        dest: `${dir}/${emoji.name}${emoji.animated ? ".gif" : ".png"}`
+      });
+      // console.log(filename);
+    }
+    resolve(true);
+  });
 }
 /** Log into Discord */
 client.login(token);
