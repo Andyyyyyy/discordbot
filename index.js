@@ -383,7 +383,7 @@ client.on("message", msg => {
         msg.channel.send("You don't have permissions for this action");
         return;
       }
-      let currentServer = servers["" + msg.guild.id];
+      let currentServer = getServer(msg.guild.id);
       currentServer.memeChannel = msg.channel.id;
       serversToJson();
       msg.channel.send("Meme channel set to this one.");
@@ -392,7 +392,7 @@ client.on("message", msg => {
         msg.channel.send("You don't have permissions for this action");
         return;
       }
-      let currentServer = servers["" + msg.guild.id];
+      let currentServer = getServer(msg.guild.id);
       currentServer.memeChannel = "";
       serversToJson();
       msg.channel.send("Hourly memes turned off (why tho).");
@@ -401,7 +401,7 @@ client.on("message", msg => {
         msg.channel.send("You don't have permissions for this action");
         return;
       }
-      let currentServer = servers["" + msg.guild.id];
+      let currentServer = getServer(msg.guild.id);
       currentServer.shoutback = !currentServer.shoutback;
       serversToJson();
       msg.channel.send(`Shoutback has been turned ${currentServer.shoutback ? "on" : "off"}.`);
@@ -410,7 +410,7 @@ client.on("message", msg => {
         msg.channel.send("You don't have permissions for this action");
         return;
       }
-      let currentServer = servers["" + msg.guild.id];
+      let currentServer = getServer(msg.guild.id);
       currentServer.nsfw = !currentServer.nsfw;
       serversToJson();
       msg.channel.send(`NSFW Posts are now ${currentServer.nsfw ? "allowed" : "forbidden"}.`);
@@ -436,7 +436,7 @@ client.on("message", msg => {
     });
   } else if (msg.content.length > 3 && shoutBackRegEx.test(msg.content)) {
     //Shoutback
-    let currentServer = servers["" + msg.guild.id];
+    let currentServer = getServer(msg.guild.id);
     if (currentServer.shoutback) {
       msg.channel.send(textToRegionalIndicator(msg.content));
     }
@@ -561,6 +561,19 @@ Example: *${result.list[0].example}*`;
     .catch(console.error);
 }
 
+/* Server aus Settings lesen und wenn keiner gefunden ist, einen neuen anlegen */
+function getServer(id) {
+  let serv = servers["" + id]
+  if(serv === undefined) {
+    let serv = new server(id);
+    servers["" + id] = serv;
+    serversToJson();
+  
+    console.log(`Bot added to  ${id}`);
+  }
+  return serv;
+}
+
 function serversToJson() {
   fs.writeFileSync("servers.json", JSON.stringify(servers));
   serversJSON = servers;
@@ -578,7 +591,7 @@ function getRandomSubmission(subreddit, msg) {
       if (msg.channel.type == "text") {
         let image = isImage(data.url);
         if (data.over_18) {
-          if (!servers["" + msg.guild.id].nsfw) {
+          if (!getServer(msg.guild.id).nsfw) {
             msg.channel.send("⚠ Post is NSFW. Use !nsfw to allow NSFW posts.");
             return;
           }
