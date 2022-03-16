@@ -1,4 +1,4 @@
-const Discord = require("discord.js");
+﻿const Discord = require("discord.js");
 const client = new Discord.Client({ autoReconnect: true });
 const token = require("./token");
 const fs = require("fs");
@@ -82,6 +82,7 @@ const commands = [
   "!8ball",
   "!yikes",
   "!source",
+  "mama",
   "!poll <question>",
   "!weather <location>",
   "!r (!reddit) <subreddit>",
@@ -314,6 +315,11 @@ client.on("message", msg => {
       msg.channel.send("***Nice Meme!***");
       msg.channel.send({
         files: ["http://niceme.me/nicememe.mp3"]
+      });
+    } else if (msg.content == "!bruh") {
+    } else if (msg.content == "!mama") {
+      msg.channel.send({
+        files: ["http://pingusteif.de/sounds/mama-uwu.mp3"]
       });
     } else if (msg.content == "!bruh") {
       msg.channel.send("***BRUH***");
