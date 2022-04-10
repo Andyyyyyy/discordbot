@@ -79,6 +79,7 @@ const commands = [
   '!nicememe',
   '!oof',
   '!bruh',
+  '!sus',
   '!ohshit',
   '!8ball',
   '!yikes',
@@ -331,12 +332,14 @@ client.on('message', (msg) => {
       msg.channel.send({
         files: ['http://niceme.me/nicememe.mp3'],
       });
-    } else if (msg.content == '!bruh') {
+    } else if (msg.content == '!sus') {
+      msg.channel.send({
+        files: ['http://pingusteif.de/sounds/sus.mp3'],
+      });
     } else if (msg.content == '!mama') {
       msg.channel.send({
         files: ['http://pingusteif.de/sounds/mama-uwu.mp3'],
       });
-    } else if (msg.content == '!bruh') {
     } else if (msg.content == '!yeet') {
       msg.channel.send({
         files: ['https://www.myinstants.com/media/sounds/yeet.mp3'],
@@ -646,7 +649,6 @@ function isImage(url) {
   let regex = /\.(jpg|png|gif)$/;
 
   return regex.test(url);
-  //return false; // auf true machen wenn nicht mehr auf pi gehostet
 }
 
 const deleteFolderRecursive = function (path) {
