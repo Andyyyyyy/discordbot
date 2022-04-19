@@ -105,7 +105,7 @@ Admin commands:
 \`!resetmemechannel\` - turns hourly posts off (why)
 \`!shoutback\` - turns 'shoutback' on/off (on by default)
 \`!nsfw\` - allows NSFW posts from !reddit command (off by default, works only in NSFW channels)
-Bot by awieandy#4205`;
+Bot by awieandy#4205 & Weazel#0293`;
 
 let lastMeme = ""; //prevent posting the same picture for hours
 
