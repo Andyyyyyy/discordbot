@@ -4,16 +4,19 @@
     "description": "memebot",
     "main": "index.js",
     "dependencies": {
-        "archiver": "^3.1.1",
-        "discord.js": "^11.4.2",
+        "archiver": "^5.3.1",
+        "discord.js": "^13.6.0",
+        "dotenv": "^16.0.0",
         "easyurban": "^1.0.0",
-        "image-downloader": "^3.5.0",
+        "image-downloader": "^4.2.0",
         "request-promise-native": "^1.0.8",
-        "snoowrap": "^1.15.2",
+        "snoowrap": "^1.23.0",
         "weather-js": "^2.0.0",
-        "wikijs": "^4.11.2"
+        "wikijs": "^6.3.3"
     },
-    "devDependencies": {},
+    "devDependencies": {
+        "prettier": "^2.6.2"
+    },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
