@@ -588,11 +588,8 @@ function serversToJson() {
 }
 
 function getRandomSubmission(subreddit, msg) {
-    console.log("Getting random submission for subreddit " + subreddit);
-
     const sr = r.getSubreddit(subreddit);
     if (!sr) {
-        console.log("Kein Subreddit mit name " + subreddit + " gefunden.");
         msg.channel.send("Error. 😞");
         return;
     }
