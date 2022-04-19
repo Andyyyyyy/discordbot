@@ -49,6 +49,9 @@ Reddit App Secret and ID can be created here: https://www.reddit.com/prefs/apps/
 !oof
 !bruh
 !source
+!mama
+!yeet
+!wann
 !poll <question>
 !weather <location>
 !reddit <subreddit>
