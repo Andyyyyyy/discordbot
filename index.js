@@ -236,7 +236,7 @@ client.on("messageCreate", (msg) => {
         } else if (msg.content == "!source") {
             msg.reply("dankbot sourcecode: https://github.com/Andyyyyyy/discordbot");
         } else if (msg.content.split(" ")[0] === "!8ball") {
-            let rand = Math.floor(Math.random() * (options_8ball.length - 1 + 1));
+            let rand = Math.floor(Math.random() * options_8ball.length);
             msg.reply(options_8ball[rand]);
         } else if (msg.content.split(" ")[0] === "!weather") {
             let location = msg.content.substring(9);
@@ -303,7 +303,7 @@ client.on("messageCreate", (msg) => {
             msg.channel.send(list);
         } else if (msg.content == "!oof") {
             /* Sound commands */
-            let rand = Math.floor(Math.random() * (oof.length - 1 + 1));
+            let rand = Math.floor(Math.random() * oof.length);
             msg.channel.send("***OOF***");
             msg.channel.send({
                 files: [oof[rand]],
