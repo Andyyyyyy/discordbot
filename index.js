@@ -315,7 +315,7 @@ client.on("messageCreate", (msg) => {
         } else if (msg.content == "!nicememe") {
             msg.channel.send("***Nice Meme!***");
             msg.channel.send({
-                files: ["https://niceme.me/nicememe.mp3"],
+                files: ["./sounds/nicememe.mp3"],
             });
         } else if (msg.content == "!sus") {
             msg.channel.send({
@@ -327,17 +327,17 @@ client.on("messageCreate", (msg) => {
             });
         } else if (msg.content == "!yeet") {
             msg.channel.send({
-                files: ["https://www.myinstants.com/media/sounds/yeet.mp3"],
+                files: ["./sounds/yeet.mp3"],
             });
         } else if (msg.content == "!bruh") {
             msg.channel.send("***BRUH***");
             msg.channel.send({
-                files: ["https://www.myinstants.com/media/sounds/movie_1.mp3"],
+                files: ["./sounds/movie_1.mp3"],
             });
         } else if (msg.content == "!ohshit") {
             msg.channel.send("***OH SHIT***");
             msg.channel.send({
-                files: ["https://www.myinstants.com/media/sounds/oh-shit_4.mp3"],
+                files: ["./sounds/oh-shit_4.mp3"],
             });
         } else if (msg.content == "!lachs") {
             msg.channel.send({
@@ -353,7 +353,7 @@ client.on("messageCreate", (msg) => {
             });
         } else if (msg.content == "!poyo") {
             msg.channel.send({
-                files: ["https://www.myinstants.com/media/sounds/kirby-poyo.mp3"],
+                files: ["./sounds/kirby-poyo.mp3"],
             });
         } else if (msg.content === "!dumpemoji") {
             /**
