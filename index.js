@@ -597,7 +597,7 @@ function serversToJson() {
 function getRandomSubmission(subreddit, msg) {
     const sr = r.getSubreddit(subreddit);
     if (!sr) {
-        msg.channel.send("Error. 😞");
+        msg.channel.send("Error. 😞 (Subreddit nicht gefunden.)");
         return;
     }
 
@@ -631,7 +631,8 @@ function getRandomSubmission(subreddit, msg) {
             }
         })
         .catch((e) => {
-            msg.channel.send("Error. 😞");
+            msg.channel.send("Error. 😞 (Reddit might be fucking around.)");
+            console.log(e);
         });
 }
 
