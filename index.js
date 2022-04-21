@@ -319,11 +319,11 @@ client.on("messageCreate", (msg) => {
             });
         } else if (msg.content == "!sus") {
             msg.channel.send({
-                files: ["https://pingusteif.de/sounds/sus.mp3"],
+                files: ["./sounds/sus.mp3"],
             });
         } else if (msg.content == "!mama") {
             msg.channel.send({
-                files: ["https://pingusteif.de/sounds/mama-uwu.mp3"],
+                files: [".sounds/mama-uwu.mp3"],
             });
         } else if (msg.content == "!yeet") {
             msg.channel.send({
@@ -341,15 +341,15 @@ client.on("messageCreate", (msg) => {
             });
         } else if (msg.content == "!lachs") {
             msg.channel.send({
-                files: ["https://pingusteif.de/sounds/den_lachs_ins_arschloch.mp3"],
+                files: ["./sounds/den_lachs_ins_arschloch.mp3"],
             });
         } else if (msg.content == "!behinderung") {
             msg.channel.send({
-                files: ["https://pingusteif.de/sounds/rivaa_behinderung.ogg"],
+                files: ["./sounds/rivaa_behinderung.ogg"],
             });
         } else if (msg.content == "!spasten") {
             msg.channel.send({
-                files: ["https://pingusteif.de/sounds/foggel_weazel_sind_spasten.ogg"],
+                files: ["./sounds/foggel_weazel_sind_spasten.ogg"],
             });
         } else if (msg.content == "!poyo") {
             msg.channel.send({
