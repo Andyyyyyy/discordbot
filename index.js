@@ -152,10 +152,6 @@ client.on("guildDelete", (guild) => {
  */
 client.on("messageCreate", (msg) => {
     if (msg.author.bot) return false;
-    //debug
-    /* if (msg.content === 'test') {
-        sendHourlyMemes('DEBUG');
-    } */
 
     //commands - messages that start with '!'
     if (msg.content[0] == "!") {
@@ -311,15 +307,15 @@ client.on("messageCreate", (msg) => {
         } else if (msg.content == "!nicememe") {
             msg.channel.send("***Nice Meme!***");
             msg.channel.send({
-                files: ["http://niceme.me/nicememe.mp3"],
+                files: ["https://niceme.me/nicememe.mp3"],
             });
         } else if (msg.content == "!sus") {
             msg.channel.send({
-                files: ["http://pingusteif.de/sounds/sus.mp3"],
+                files: ["https://pingusteif.de/sounds/sus.mp3"],
             });
         } else if (msg.content == "!mama") {
             msg.channel.send({
-                files: ["http://pingusteif.de/sounds/mama-uwu.mp3"],
+                files: ["https://pingusteif.de/sounds/mama-uwu.mp3"],
             });
         } else if (msg.content == "!yeet") {
             msg.channel.send({
@@ -337,15 +333,15 @@ client.on("messageCreate", (msg) => {
             });
         } else if (msg.content == "!lachs") {
             msg.channel.send({
-                files: ["http://pingusteif.de/sounds/den_lachs_ins_arschloch.mp3"],
+                files: ["https://pingusteif.de/sounds/den_lachs_ins_arschloch.mp3"],
             });
         } else if (msg.content == "!behinderung") {
             msg.channel.send({
-                files: ["http://pingusteif.de/sounds/rivaa_behinderung.ogg"],
+                files: ["https://pingusteif.de/sounds/rivaa_behinderung.ogg"],
             });
         } else if (msg.content == "!spasten") {
             msg.channel.send({
-                files: ["http://pingusteif.de/sounds/foggel_weazel_sind_spasten.ogg"],
+                files: ["https://pingusteif.de/sounds/foggel_weazel_sind_spasten.ogg"],
             });
         } else if (msg.content == "!poyo") {
             msg.channel.send({
@@ -355,7 +351,7 @@ client.on("messageCreate", (msg) => {
             /**
              * Admin Commands
              */
-            if (!msg.member.hasPermission("ADMINISTRATOR")) {
+            if (!msg.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
                 msg.channel.send("You don't have permissions for this action");
                 return;
             }
@@ -389,7 +385,7 @@ client.on("messageCreate", (msg) => {
                 });
             });
         } else if (msg.content === "!setmemechannel") {
-            if (!msg.member.hasPermission("ADMINISTRATOR")) {
+            if (!msg.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
                 msg.channel.send("You don't have permissions for this action");
                 return;
             }
@@ -398,7 +394,7 @@ client.on("messageCreate", (msg) => {
             serversToJson();
             msg.channel.send("Meme channel set to this one.");
         } else if (msg.content === "!resetmemechannel") {
-            if (!msg.member.hasPermission("ADMINISTRATOR")) {
+            if (!msg.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
                 msg.channel.send("You don't have permissions for this action");
                 return;
             }
@@ -407,7 +403,7 @@ client.on("messageCreate", (msg) => {
             serversToJson();
             msg.channel.send("Hourly memes turned off (why tho).");
         } else if (msg.content === "!shoutback") {
-            if (!msg.member.hasPermission("ADMINISTRATOR")) {
+            if (!msg.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
                 msg.channel.send("You don't have permissions for this action");
                 return;
             }
@@ -416,7 +412,7 @@ client.on("messageCreate", (msg) => {
             serversToJson();
             msg.channel.send(`Shoutback has been turned ${currentServer.shoutback ? "on" : "off"}.`);
         } else if (msg.content === "!nsfw") {
-            if (!msg.member.hasPermission("ADMINISTRATOR")) {
+            if (!msg.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
                 msg.channel.send("You don't have permissions for this action");
                 return;
             }
@@ -424,7 +420,9 @@ client.on("messageCreate", (msg) => {
             currentServer.nsfw = !currentServer.nsfw;
             serversToJson();
             msg.channel.send(`NSFW Posts are now ${currentServer.nsfw ? "allowed" : "forbidden"}.`);
-        }
+        } /*else if (msg.content === "!hmTest") {
+            sendHourlyMemes("DEBUG");
+        }*/
     } else if (msg.content === "ayy") {
         //Actions without command
         msg.channel.send("lmao😂");
@@ -467,8 +465,9 @@ function sendHourlyMemes(text) {
     for (let s of Object.keys(servers)) {
         s = servers[s];
         if (s.memeChannel === "") continue;
-        let thisServer = client.guilds.get(s.id);
-        let thisChannel = thisServer.channels.get(s.memeChannel);
+        let thisServer = client.guilds.cache.get(s.id);
+        if (!thisServer) continue;
+        let thisChannel = thisServer.channels.cache.get(s.memeChannel);
 
         console.log(`Send meme to ${thisServer.name}`);
         thisChannel.send(isImage(text) ? { files: [text] } : text);
