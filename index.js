@@ -531,7 +531,7 @@ function textToRegionalIndicator(text) {
 
 function setPresenceText(text) {
     client.user.setPresence({
-        game: { name: text, type: "WATCHING" },
+        activities: [{ name: text, type: "WATCHING" }],
         status: "online",
     });
 }
