@@ -114,6 +114,14 @@ client.on("ready", () => {
     console.log(`Bot started.`);
     console.log(`Logged in as ${client.user.tag}!`);
     loadServers();
+
+    for (const guild of client.guilds.cache) {
+        if (!servers[guild[0]]) {
+            let newServer = new server(guild[0]);
+            servers["" + guild[0]] = newServer;
+            serversToJson();
+        }
+    }
     setPresenceText(`ayy lmao`);
 });
 
@@ -684,5 +692,4 @@ async function downloadEmojis(emojiMap, dir) {
     });
 }
 /** Log into Discord */
-console.log(process.env.DISCORD_BOT_TOKEN);
 client.login(process.env.DISCORD_BOT_TOKEN);
