@@ -114,6 +114,14 @@ client.on("ready", () => {
     console.log(`Bot started.`);
     console.log(`Logged in as ${client.user.tag}!`);
     loadServers();
+
+    for (const guild of client.guilds.cache) {
+        if (!servers[guild[0]]) {
+            let newServer = new server(guild[0]);
+            servers["" + guild[0]] = newServer;
+            serversToJson();
+        }
+    }
     setPresenceText(`ayy lmao`);
 });
 
@@ -152,10 +160,6 @@ client.on("guildDelete", (guild) => {
  */
 client.on("messageCreate", (msg) => {
     if (msg.author.bot) return false;
-    //debug
-    /* if (msg.content === 'test') {
-        sendHourlyMemes('DEBUG');
-    } */
 
     //commands - messages that start with '!'
     if (msg.content[0] == "!") {
@@ -311,51 +315,51 @@ client.on("messageCreate", (msg) => {
         } else if (msg.content == "!nicememe") {
             msg.channel.send("***Nice Meme!***");
             msg.channel.send({
-                files: ["http://niceme.me/nicememe.mp3"],
+                files: ["./sounds/nicememe.mp3"],
             });
         } else if (msg.content == "!sus") {
             msg.channel.send({
-                files: ["http://pingusteif.de/sounds/sus.mp3"],
+                files: ["./sounds/sus.mp3"],
             });
         } else if (msg.content == "!mama") {
             msg.channel.send({
-                files: ["http://pingusteif.de/sounds/mama-uwu.mp3"],
+                files: [".sounds/mama-uwu.mp3"],
             });
         } else if (msg.content == "!yeet") {
             msg.channel.send({
-                files: ["https://www.myinstants.com/media/sounds/yeet.mp3"],
+                files: ["./sounds/yeet.mp3"],
             });
         } else if (msg.content == "!bruh") {
             msg.channel.send("***BRUH***");
             msg.channel.send({
-                files: ["https://www.myinstants.com/media/sounds/movie_1.mp3"],
+                files: ["./sounds/movie_1.mp3"],
             });
         } else if (msg.content == "!ohshit") {
             msg.channel.send("***OH SHIT***");
             msg.channel.send({
-                files: ["https://www.myinstants.com/media/sounds/oh-shit_4.mp3"],
+                files: ["./sounds/oh-shit_4.mp3"],
             });
         } else if (msg.content == "!lachs") {
             msg.channel.send({
-                files: ["http://pingusteif.de/sounds/den_lachs_ins_arschloch.mp3"],
+                files: ["./sounds/den_lachs_ins_arschloch.mp3"],
             });
         } else if (msg.content == "!behinderung") {
             msg.channel.send({
-                files: ["http://pingusteif.de/sounds/rivaa_behinderung.ogg"],
+                files: ["./sounds/rivaa_behinderung.ogg"],
             });
         } else if (msg.content == "!spasten") {
             msg.channel.send({
-                files: ["http://pingusteif.de/sounds/foggel_weazel_sind_spasten.ogg"],
+                files: ["./sounds/foggel_weazel_sind_spasten.ogg"],
             });
         } else if (msg.content == "!poyo") {
             msg.channel.send({
-                files: ["https://www.myinstants.com/media/sounds/kirby-poyo.mp3"],
+                files: ["./sounds/kirby-poyo.mp3"],
             });
         } else if (msg.content === "!dumpemoji") {
             /**
              * Admin Commands
              */
-            if (!msg.member.hasPermission("ADMINISTRATOR")) {
+            if (!msg.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
                 msg.channel.send("You don't have permissions for this action");
                 return;
             }
@@ -389,7 +393,7 @@ client.on("messageCreate", (msg) => {
                 });
             });
         } else if (msg.content === "!setmemechannel") {
-            if (!msg.member.hasPermission("ADMINISTRATOR")) {
+            if (!msg.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
                 msg.channel.send("You don't have permissions for this action");
                 return;
             }
@@ -398,7 +402,7 @@ client.on("messageCreate", (msg) => {
             serversToJson();
             msg.channel.send("Meme channel set to this one.");
         } else if (msg.content === "!resetmemechannel") {
-            if (!msg.member.hasPermission("ADMINISTRATOR")) {
+            if (!msg.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
                 msg.channel.send("You don't have permissions for this action");
                 return;
             }
@@ -407,7 +411,7 @@ client.on("messageCreate", (msg) => {
             serversToJson();
             msg.channel.send("Hourly memes turned off (why tho).");
         } else if (msg.content === "!shoutback") {
-            if (!msg.member.hasPermission("ADMINISTRATOR")) {
+            if (!msg.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
                 msg.channel.send("You don't have permissions for this action");
                 return;
             }
@@ -416,7 +420,7 @@ client.on("messageCreate", (msg) => {
             serversToJson();
             msg.channel.send(`Shoutback has been turned ${currentServer.shoutback ? "on" : "off"}.`);
         } else if (msg.content === "!nsfw") {
-            if (!msg.member.hasPermission("ADMINISTRATOR")) {
+            if (!msg.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
                 msg.channel.send("You don't have permissions for this action");
                 return;
             }
@@ -424,7 +428,9 @@ client.on("messageCreate", (msg) => {
             currentServer.nsfw = !currentServer.nsfw;
             serversToJson();
             msg.channel.send(`NSFW Posts are now ${currentServer.nsfw ? "allowed" : "forbidden"}.`);
-        }
+        } /*else if (msg.content === "!hmTest") {
+            sendHourlyMemes("DEBUG");
+        }*/
     } else if (msg.content === "ayy") {
         //Actions without command
         msg.channel.send("lmao😂");
@@ -467,8 +473,9 @@ function sendHourlyMemes(text) {
     for (let s of Object.keys(servers)) {
         s = servers[s];
         if (s.memeChannel === "") continue;
-        let thisServer = client.guilds.get(s.id);
-        let thisChannel = thisServer.channels.get(s.memeChannel);
+        let thisServer = client.guilds.cache.get(s.id);
+        if (!thisServer) continue;
+        let thisChannel = thisServer.channels.cache.get(s.memeChannel);
 
         console.log(`Send meme to ${thisServer.name}`);
         thisChannel.send(isImage(text) ? { files: [text] } : text);
@@ -524,7 +531,7 @@ function textToRegionalIndicator(text) {
 
 function setPresenceText(text) {
     client.user.setPresence({
-        game: { name: text, type: "WATCHING" },
+        activities: [{ name: text, type: "WATCHING" }],
         status: "online",
     });
 }
@@ -590,7 +597,7 @@ function serversToJson() {
 function getRandomSubmission(subreddit, msg) {
     const sr = r.getSubreddit(subreddit);
     if (!sr) {
-        msg.channel.send("Error. 😞");
+        msg.channel.send("Error. 😞 (Subreddit not found.)");
         return;
     }
 
@@ -624,7 +631,8 @@ function getRandomSubmission(subreddit, msg) {
             }
         })
         .catch((e) => {
-            msg.channel.send("Error. 😞");
+            msg.channel.send("Error. 😞 (Reddit might be fucking around.)");
+            console.log(e);
         });
 }
 
