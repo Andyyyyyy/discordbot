@@ -597,7 +597,7 @@ function serversToJson() {
 function getRandomSubmission(subreddit, msg) {
     const sr = r.getSubreddit(subreddit);
     if (!sr) {
-        msg.channel.send("Error. 😞 (Subreddit nicht gefunden.)");
+        msg.channel.send("Error. 😞 (Subreddit not found.)");
         return;
     }
 
