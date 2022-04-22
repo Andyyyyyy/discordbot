@@ -323,7 +323,7 @@ client.on("messageCreate", (msg) => {
             });
         } else if (msg.content == "!mama") {
             msg.channel.send({
-                files: [".sounds/mama-uwu.mp3"],
+                files: ["./sounds/mama-uwu.mp3"],
             });
         } else if (msg.content == "!yeet") {
             msg.channel.send({
