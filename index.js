@@ -428,9 +428,10 @@ client.on("messageCreate", (msg) => {
             currentServer.nsfw = !currentServer.nsfw;
             serversToJson();
             msg.channel.send(`NSFW Posts are now ${currentServer.nsfw ? "allowed" : "forbidden"}.`);
-        } /*else if (msg.content === "!hmTest") {
-            sendHourlyMemes("DEBUG");
-        }*/
+        } 
+        // else if (msg.content === "!hmTest") {
+        //     sendHourlyMemes("DEBUG");
+        // }
     } else if (msg.content === "ayy") {
         //Actions without command
         msg.channel.send("lmao😂");
@@ -478,7 +479,8 @@ function sendHourlyMemes(text) {
         let thisChannel = thisServer.channels.cache.get(s.memeChannel);
 
         console.log(`Send meme to ${thisServer.name}`);
-        thisChannel.send(isImage(text) ? { files: [text] } : text);
+        trySendAsImage(text, {channel: thisChannel}) //hacky lol 
+        // thisChannel.send(isImage(text) ? { files: [text] } : text);
     }
 }
 
@@ -612,7 +614,6 @@ function getRandomSubmission(subreddit, msg) {
                 return;
             }
 
-            let image = isImage(data.url);
             if (msg.channel.type == "GUILD_TEXT") {
                 if (data.over_18) {
                     if (!getServer(msg.guild.id).nsfw) {
@@ -623,15 +624,12 @@ function getRandomSubmission(subreddit, msg) {
                         msg.channel.send("⚠ Post is NSFW. This isn't a NSFW channel.");
                         return;
                     }
-                    if (image) msg.channel.send(data.url, image ? { files: [data.url] } : data.url);
-                    else msg.channel.send(data.url);
+                    trySendAsImage(data.url, msg)
                 } else {
-                    if (image) msg.channel.send(data.url, image ? { files: [data.url] } : data.url);
-                    else msg.channel.send(data.url);
+                    trySendAsImage(data.url, msg)
                 }
             } else if (msg.channel.type == "dm" || msg.type == "group") {
-                if (image) msg.channel.send(data.url, image ? { files: [data.url] } : data.url);
-                else msg.channel.send(data.url);
+                trySendAsImage(data.url, msg)
             }
         })
         .catch((e) => {
@@ -644,6 +642,18 @@ function isImage(url) {
     let regex = /\.(jpg|png|gif)$/;
 
     return regex.test(url);
+}
+
+function trySendAsImage(url, msg) {
+    let image = isImage(url);
+    if (image) {
+        try {
+            msg.channel.send(url, image ? { files: [url] } : url);
+        } catch (e) {
+            console.log("Catched a post likely larger than 8 MB.");
+            msg.channel.send(url);
+        }
+    } else msg.channel.send(url);
 }
 
 const deleteFolderRecursive = function (path) {
