@@ -571,7 +571,11 @@ ${result.list[0].definition}
 Example: *${result.list[0].example}*`;
             definition = definition.replace(/\[/g, "");
             definition = definition.replace(/\]/g, "");
-            msg.channel.send(definition);
+            if (definition.length > 1999) {
+                msg.channel.send(`${definition.substring(0, 1900)}... (Message too long)`);
+            } else {
+                msg.channel.send(definition);
+            }
         })
         .catch(console.error);
 }
